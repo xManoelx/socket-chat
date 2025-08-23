@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HomePage - ChatApp</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style-homepage.css') }}">
+</head>
+    <body>
+    <div class="header">
+        <h1>ChatApp</h1>
+        <div class="nav-links">
+            <a href="/rooms">Salas</a>
+            <a href="/about">Sobre</a>
+            <a href="/logout">Sair</a>
+        </div>
+    </div>
+
+    <div class="chat-container">
+        <div class="user-info">
+            Usuário: <span id="current-user">{{ username }}</span>
+        </div>
+        
+        <div class="homepage-content">
+            <h2>Chats Disponíveis</h2>
+            
+            <div class="chat-list">
+                <div class="chat-item">
+                    <h3>Chat Geral</h3>
+                    <p>Converse com todos os usuários online</p>
+                    <a href="/chat/geral?user={{ username }}" class="join-chat-btn">Entrar</a>
+                </div>
+                
+                <div class="chat-item">
+                    <h3>Programação</h3>
+                    <p>Discussões sobre desenvolvimento</p>
+                    <a href="/chat/programacao?user={{ username }}" class="join-chat-btn">Entrar</a>
+                </div>
+                
+                <div class="chat-item">
+                    <h3>Games</h3>
+                    <p>Chat sobre jogos e gaming</p>
+                    <a href="/chat/games?user={{ username }}" class="join-chat-btn">Entrar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

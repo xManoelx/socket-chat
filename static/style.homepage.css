@@ -1,0 +1,117 @@
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #f0f0f0;
+}
+
+.header {
+    background-color: #007bff;
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header h1 {
+    font-size: 24px;
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    margin-left: 20px;
+    padding: 8px 15px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.nav-links a:hover {
+    background-color: rgba(255,255,255,0.2);
+}
+
+.chat-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    max-width: 800px;
+    margin: 20px auto;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.user-info {
+    background-color: #e9ecef;
+    padding: 10px 20px;
+    border-bottom: 1px solid #ddd;
+    font-weight: bold;
+}
+
+.homepage-content {
+    padding: 30px;
+    text-align: center;
+}
+
+.homepage-content h2 {
+    margin-bottom: 30px;
+    color: #333;
+    font-size: 28px;
+}
+
+.chat-list {
+    display: grid;
+    gap: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.chat-item {
+    background: #f8f9fa;
+    padding: 25px;
+    border-radius: 10px;
+    border-left: 4px solid #007bff;
+    text-align: left;
+    transition: transform 0.2s;
+}
+
+.chat-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.chat-item h3 {
+    color: #007bff;
+    margin-bottom: 10px;
+    font-size: 20px;
+}
+
+.chat-item p {
+    color: #666;
+    margin-bottom: 15px;
+    line-height: 1.4;
+}
+
+.join-chat-btn {
+    display: inline-block;
+    padding: 8px 20px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.join-chat-btn:hover {
+    background-color: #0056b3;
+}

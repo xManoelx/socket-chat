@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - ChatApp</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style-login.css') }}">
 </head>
-<body class="login-body">
+    <body>
     <div class="login-container">
         <h1>ChatApp</h1>
         <form id="loginForm">
@@ -20,8 +20,8 @@
             e.preventDefault();
             const username = document.getElementById('username').value;
             if (username.trim()) {
-                // Redirecionar para o chat com o nome como parâmetro
-                window.location.href = '/chat?user=' + encodeURIComponent(username);
+                // Redirecionar para a homepage com o nome como parâmetro
+                window.location.href = '/homepage?user=' + encodeURIComponent(username);
             }
         };
     </script>

@@ -16,13 +16,13 @@ online_users = []
 def index():
     return render_template('pages/index.html')
 
-# Rota do chat - Renderiza a página do chat
-@app.route('/chat')
-def chat():
+# Rota homepage - Renderiza a página principal após login
+@app.route('/homepage')
+def homepage():
     username = request.args.get('user')
     if not username:
         return render_template('pages/login.html')  # Redireciona para login se não tiver usuário
-    return render_template('pages/chat.html', username=username)
+    return render_template('pages/homepage.html', username=username)
 
 # Rota de login - Renderiza a página de login
 @app.route('/login')
@@ -34,7 +34,7 @@ def login():
 def about():
     return render_template('pages/about.html')
 
-# Rota API - Retorna a lista de usuários online em formato JSON
+# Rota de API para usuários online
 @app.route('/api/users')
 def api_users():
     return jsonify({
