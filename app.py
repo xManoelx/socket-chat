@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 from flask_socketio import SocketIO, emit
 
 # Inicializa a aplicação Flask
@@ -14,24 +14,27 @@ online_users = []
 # Rota principal - Renderiza a página inicial do chat
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('pages/index.html')
 
 # Rota do chat - Renderiza a página do chat
 @app.route('/chat')
 def chat():
-    return render_template('chat.html')
+    username = request.args.get('user')
+    if not username:
+        return render_template('pages/login.html')  # Redireciona para login se não tiver usuário
+    return render_template('pages/chat.html', username=username)
 
 # Rota de login - Renderiza a página de login
 @app.route('/login')
 def login():
-    return render_template('login.html')
+    return render_template('pages/login.html')
 
 # Rota about - Renderiza a página sobre
 @app.route('/about')
 def about():
-    return render_template('about.html')
+    return render_template('pages/about.html')
 
-# Rota para obter número de usuarios online
+# Rota API - Retorna a lista de usuários online em formato JSON
 @app.route('/api/users')
 def api_users():
     return jsonify({
@@ -39,15 +42,15 @@ def api_users():
         'count': len(online_users)
     })
 
-# Rota para obter salas de chat
+# Rota rooms - Renderiza a página de salas de chat
 @app.route('/rooms')
 def rooms():
-    return render_template('rooms.html')
+    return render_template('pages/rooms.html')
 
-# Rota de logout - Renderiza a página de logout
+# Rota logout - Desloga o usuário
 @app.route('/logout')
 def logout():
-    return render_template('logout.html')
+    return render_template('pages/logout.html')
 
 #######################################################
 

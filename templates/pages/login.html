@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - ChatApp</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="login-body">
+    <div class="login-container">
+        <h1>ChatApp</h1>
+        <form id="loginForm">
+            <input type="text" id="username" placeholder="Digite seu nome" required>
+            <button type="submit">Entrar no Chat</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').onsubmit = function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            if (username.trim()) {
+                // Redirecionar para o chat com o nome como parâmetro
+                window.location.href = '/chat?user=' + encodeURIComponent(username);
+            }
+        };
+    </script>
+</body>
+</html>
