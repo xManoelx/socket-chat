@@ -34,7 +34,6 @@ def login():
 def about():
     return render_template('pages/about.html')
 
-# Rota de API para usuários online
 @app.route('/api/users')
 def api_users():
     return jsonify({
@@ -51,6 +50,14 @@ def rooms():
 @app.route('/logout')
 def logout():
     return render_template('pages/logout.html')
+
+# Rotas para chats específicos
+@app.route('/chat/<sala>')
+def chat_sala(sala):
+    username = request.args.get('user')
+    if not username:
+        return render_template('pages/login.html')
+    return render_template('pages/chat.html', username=username, sala=sala)
 
 #######################################################
 
