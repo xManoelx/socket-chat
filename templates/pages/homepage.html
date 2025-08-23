@@ -1,4 +1,57 @@
-<!DOCTYPE html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js"></script>
+    <script>
+        const username = "{{ username }}";
+        
+        // Conectar ao SocketIO
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+        
+        // Quando conectar, notificar que o usuário está online na homepage
+        socket.on('connect', function() {
+            socket.emit('user_online', {'username': username});
+        });
+        
+        // Quando desconectar (fechar aba/navegador)
+        window.addEventListener('beforeunload', function() {
+            socket.emit('user_offline', {'username': username});
+        });
+        
+        // Função para carregar usuários online
+        function loadOnlineUsers() {
+            fetch('/api/users')
+                .then(response => response.json())
+                .then(data => {
+                    // Atualizar total de usuários (apenas o número)
+                    document.getElementById('total-count').textContent = data.count_total;
+                    
+                    // Atualizar contadores por sala
+                    Object.entries(data.count_by_room).forEach(([room, count]) => {
+                        const countElement = document.getElementById(room + '-count');
+                        if (countElement) {
+                            countElement.textContent = `${count} usuários online`;
+                        }
+                    });
+                })
+                .catch(error => console.error('Erro ao carregar usuários:', error));
+        }
+        
+        // Escutar atualizações de usuários em tempo real
+        socket.on('users_updated', function(data) {
+            document.getElementById('total-count').textContent = data.count_total;
+            
+            Object.entries(data.count_by_room).forEach(([room, count]) => {
+                const countElement = document.getElementById(room + '-count');
+                if (countElement) {
+                    countElement.textContent = `${count} usuários online`;
+                }
+            });
+        });
+        
+        // Carregar usuários na inicialização
+        loadOnlineUsers();
+        
+        // Atualizar a cada 30 segundos (backup)
+        setInterval(loadOnlineUsers, 30000);
+    </script><!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -18,29 +71,41 @@
 
     <div class="chat-container">
         <div class="user-info">
-            Usuário: <span id="current-user">{{ username }}</span>
+            <span>Usuário: {{ username }}</span>
+            <span>Usuários online: <span id="total-count">0</span></span>
         </div>
         
         <div class="homepage-content">
-            <h2>Chats Disponíveis</h2>
-            
-            <div class="chat-list">
-                <div class="chat-item">
-                    <h3>Chat Geral</h3>
-                    <p>Converse com todos os usuários online</p>
-                    <a href="/chat/geral?user={{ username }}" class="join-chat-btn">Entrar</a>
-                </div>
+            <div class="chats-section">
+                <h2>Chats Disponíveis</h2>
                 
-                <div class="chat-item">
-                    <h3>Programação</h3>
-                    <p>Discussões sobre desenvolvimento</p>
-                    <a href="/chat/programacao?user={{ username }}" class="join-chat-btn">Entrar</a>
-                </div>
-                
-                <div class="chat-item">
-                    <h3>Games</h3>
-                    <p>Chat sobre jogos e gaming</p>
-                    <a href="/chat/games?user={{ username }}" class="join-chat-btn">Entrar</a>
+                <div class="chat-list">
+                    <div class="chat-item">
+                        <h3>Chat Geral</h3>
+                        <p>Converse com todos os usuários online</p>
+                        <div class="room-users">
+                            <span class="users-count" id="geral-count">0 usuários online</span>
+                        </div>
+                        <a href="/chat/geral?user={{ username }}" class="join-chat-btn">Entrar</a>
+                    </div>
+                    
+                    <div class="chat-item">
+                        <h3>Programação</h3>
+                        <p>Discussões sobre desenvolvimento</p>
+                        <div class="room-users">
+                            <span class="users-count" id="programacao-count">0 usuários online</span>
+                        </div>
+                        <a href="/chat/programacao?user={{ username }}" class="join-chat-btn">Entrar</a>
+                    </div>
+                    
+                    <div class="chat-item">
+                        <h3>Games</h3>
+                        <p>Chat sobre jogos e gaming</p>
+                        <div class="room-users">
+                            <span class="users-count" id="games-count">0 usuários online</span>
+                        </div>
+                        <a href="/chat/games?user={{ username }}" class="join-chat-btn">Entrar</a>
+                    </div>
                 </div>
             </div>
         </div>
