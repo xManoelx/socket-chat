@@ -6,24 +6,13 @@
     <title>Login - ChatApp</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style-login.css') }}">
 </head>
-    <body>
+<body>
     <div class="login-container">
         <h1>ChatApp</h1>
-        <form id="loginForm">
-            <input type="text" id="username" placeholder="Digite seu nome" required>
+        <form method="POST" action="/login">
+            <input type="text" name="username" placeholder="Digite seu nome" required>
             <button type="submit">Entrar no Chat</button>
         </form>
     </div>
-
-    <script>
-        document.getElementById('loginForm').onsubmit = function(e) {
-            e.preventDefault();
-            const username = document.getElementById('username').value;
-            if (username.trim()) {
-                // Redirecionar para a homepage com o nome como parâmetro
-                window.location.href = '/homepage?user=' + encodeURIComponent(username);
-            }
-        };
-    </script>
 </body>
 </html>

@@ -65,6 +65,14 @@
             });
         });
         
+        // Carregar contagem inicial de usuários na sala
+        fetch(`/api/users/${room}`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('room-users-count').textContent = data.count;
+            })
+            .catch(error => console.error('Erro ao carregar usuários da sala:', error));
+        
         // Receber mensagens da sala
         socket.on('message', function(data) {
             if (data.room === room) {
@@ -95,12 +103,15 @@
             if (data.room === room) {
                 document.getElementById('room-users-count').textContent = data.users_in_room.length;
                 
-                const messagesDiv = document.getElementById('messages');
-                const systemMessage = document.createElement('div');
-                systemMessage.className = 'system-message';
-                systemMessage.textContent = `${data.username} entrou na sala`;
-                messagesDiv.appendChild(systemMessage);
-                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                // Só mostrar mensagem se não for o próprio usuário
+                if (data.username !== username) {
+                    const messagesDiv = document.getElementById('messages');
+                    const systemMessage = document.createElement('div');
+                    systemMessage.className = 'system-message';
+                    systemMessage.textContent = `${data.username} entrou na sala`;
+                    messagesDiv.appendChild(systemMessage);
+                    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                }
             }
         });
         

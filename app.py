@@ -67,11 +67,17 @@ def get_online_users():
 # Retorna usuários online em uma sala específica
 def get_users_in_room(room_name):
     room = Room.query.filter_by(name=room_name).first()
+    print(f"DEBUG get_users_in_room: sala {room_name}, room encontrada: {room}")
+    
     if not room:
         return []
     
     user_rooms = UserRoom.query.filter_by(room_id=room.id).all()
+    print(f"DEBUG: UserRoom entries: {len(user_rooms)}")
+    
     users = [ur.user for ur in user_rooms if ur.user.is_online]
+    print(f"DEBUG: usuarios online na sala: {[u.username for u in users]}")
+    
     return users
 
 # Adiciona usuário a uma sala
@@ -127,15 +133,22 @@ def homepage():
 # Rota de login - Renderiza a página de login e processa o formulário
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    print(f"Login route - Method: {request.method}")
+    
     if request.method == 'POST':
         username = request.form.get('username')
+        print(f"Username recebido: {username}")
+        
         success, message = authenticate_user(username)
+        print(f"Authenticate result: {success}, {message}")
         
         if success:
             flash(message, 'success')
+            print("Redirecionando para homepage...")
             return redirect(url_for('homepage'))
         else:
             flash(message, 'error')
+            print(f"Erro no login: {message}")
     
     return render_template('pages/login.html')
 
@@ -192,7 +205,7 @@ def logout():
 @app.route('/chat/<sala>')
 @login_required
 def chat_sala(sala):
-    
+
     # Verificar se a sala existe
     room = Room.query.filter_by(name=sala).first()
     if not room:
@@ -246,14 +259,26 @@ def handle_join_room(data):
     username = data['username']
     room_name = data['room']
     
+    print(f"DEBUG: {username} tentando entrar na sala {room_name}")
+    
     # Adicionar usuário à sala no SocketIO
     join_room(room_name)
     
+    # PRIMEIRO: Garantir que o usuário está online
+    user = User.query.filter_by(username=username).first()
+    if user:
+        user.is_online = True
+        user.last_seen = datetime.utcnow()
+        db.session.commit()
+        print(f"DEBUG: {username} marcado como online")
+    
     # Adicionar no banco de dados
     success = user_join_room(username, room_name)
+    print(f"DEBUG: user_join_room result: {success}")
+    
     if success:
         users_in_room = get_users_in_room(room_name)
-        print(f'{username} entrou na sala {room_name}')
+        print(f"DEBUG: usuarios na sala {room_name}: {[user.username for user in users_in_room]}")
         
         # Notificar todos na sala
         emit('user_joined', {
