@@ -2,7 +2,7 @@ from flask import Flask, render_template, jsonify, request, redirect, url_for, f
 from flask_socketio import SocketIO, emit, join_room, leave_room
 from flask_login import LoginManager, login_required, current_user, login_user, logout_user
 from models import db, User, Room, Message, UserRoom
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 
 # Inicializa a aplicação Flask
 app = Flask(__name__)
@@ -118,6 +118,16 @@ def user_leave_room(username, room_name):
         db.session.commit()
     
     return True
+
+# Função para converter UTC para horário brasileiro
+def get_brazil_time():
+    # UTC-3 (horário padrão do Brasil)
+    brazil_tz = timezone(timedelta(hours=-3))
+    return datetime.now(brazil_tz)
+
+def utc_to_brazil_time(utc_time):
+    brazil_tz = timezone(timedelta(hours=-3))
+    return utc_time.replace(tzinfo=timezone.utc).astimezone(brazil_tz)
 
 # Rota principal - Renderiza a página inicial do chat
 @app.route('/')
@@ -328,7 +338,8 @@ def handle_message(data):
         message = Message(
             content=message_content,
             user_id=user.id,
-            room_id=room.id
+            room_id=room.id,
+            timestamp=get_brazil_time()  # ← Usar horário brasileiro
         )
         db.session.add(message)
         db.session.commit()
@@ -343,8 +354,8 @@ def handle_message(data):
             'timestamp': message.timestamp.strftime('%H:%M')
         }, room=room_name)
 
+# Função auxiliar para emitir atualizações de usuários
 def emit_users_update():
-    """Função auxiliar para emitir atualizações de usuários"""
     online_users = get_online_users()
     users_by_room = {}
     
