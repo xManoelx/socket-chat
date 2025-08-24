@@ -31,21 +31,21 @@
 
             <div class="rooms-stats">
                 <div class="stat-card">
-                    <div class="stat-icon">SALAS</div>
+                    <div class="stat-icon">🏠</div>
                     <div class="stat-info">
                         <div class="stat-number">{{ rooms|length }}</div>
                         <div class="stat-label">Salas Ativas</div>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon">USERS</div>
+                    <div class="stat-icon">👥</div>
                     <div class="stat-info">
                         <div class="stat-number" id="total-online">0</div>
                         <div class="stat-label">Usuários Online</div>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon">MSGS</div>
+                    <div class="stat-icon">💬</div>
                     <div class="stat-info">
                         <div class="stat-number" id="total-messages">-</div>
                         <div class="stat-label">Mensagens Hoje</div>
@@ -58,10 +58,10 @@
                 <div class="room-card">
                     <div class="room-header">
                         <div class="room-icon">
-                            {% if room.name == 'geral' %}GERAL
-                            {% elif room.name == 'programacao' %}CODE
-                            {% elif room.name == 'games' %}GAME
-                            {% else %}CHAT{% endif %}
+                            {% if room.name == 'geral' %}🌐
+                            {% elif room.name == 'programacao' %}💻
+                            {% elif room.name == 'games' %}🎮
+                            {% else %}💬{% endif %}
                         </div>
                         <div class="room-info">
                             <h3>{{ room.display_name }}</h3>
@@ -109,15 +109,15 @@
                 <h3>Informações Adicionais</h3>
                 <div class="info-grid">
                     <div class="info-item">
-                        <h4>Salas Privadas</h4>
+                        <h4>🔒 Salas Privadas</h4>
                         <p>Em breve você poderá criar suas próprias salas privadas protegidas por senha.</p>
                     </div>
                     <div class="info-item">
-                        <h4>Configurações</h4>
+                        <h4>⚙️ Configurações</h4>
                         <p>Personalize sua experiência com temas, notificações e muito mais.</p>
                     </div>
                     <div class="info-item">
-                        <h4>Estatísticas</h4>
+                        <h4>📊 Estatísticas</h4>
                         <p>Acompanhe suas estatísticas de uso e atividade no ChatApp.</p>
                     </div>
                 </div>
@@ -166,93 +166,6 @@
         </div>
     </div>
 
-    <script>
-        // Carregar estatísticas em tempo real
-        function loadRoomStats() {
-            fetch('/api/users')
-                .then(response => response.json())
-                .then(data => {
-                    // Total de usuários online
-                    document.getElementById('total-online').textContent = data.count_total;
-                    
-                    // Usuários por sala
-                    Object.entries(data.count_by_room).forEach(([room, count]) => {
-                        const element = document.getElementById(`users-${room}`);
-                        if (element) {
-                            element.textContent = count;
-                        }
-                        
-                        // Atualizar indicador de atividade
-                        const activityDot = document.getElementById(`activity-${room}`);
-                        const activityText = document.getElementById(`activity-text-${room}`);
-                        
-                        if (activityDot && activityText) {
-                            if (count > 0) {
-                                activityDot.className = 'activity-dot active';
-                                activityText.textContent = 'Ativa';
-                            } else {
-                                activityDot.className = 'activity-dot inactive';
-                                activityText.textContent = 'Inativa';
-                            }
-                        }
-                    });
-                })
-                .catch(error => console.error('Erro ao carregar estatísticas:', error));
-        }
-        
-        // Mostrar detalhes da sala
-        function showRoomDetails(roomName, displayName) {
-            document.getElementById('modalTitle').textContent = `Detalhes - ${displayName}`;
-            document.getElementById('roomModal').style.display = 'block';
-            
-            // Carregar dados específicos da sala
-            fetch(`/api/users/${roomName}`)
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('modalUsers').textContent = data.count;
-                    document.getElementById('modalActivity').textContent = new Date().toLocaleString('pt-BR');
-                    document.getElementById('modalMessages').innerHTML = 
-                        data.count > 0 ? 'Sala ativa com conversas em andamento' : 'Nenhuma atividade recente';
-                });
-        }
-        
-        // Fechar modal
-        function closeModal() {
-            document.getElementById('roomModal').style.display = 'none';
-        }
-        
-        // Confirmar logout
-        function confirmLogout() {
-            document.getElementById('logoutModal').style.display = 'block';
-        }
-        
-        function closeLogoutModal() {
-            document.getElementById('logoutModal').style.display = 'none';
-        }
-        
-        function logout() {
-            window.location.href = '/logout';
-        }
-        
-        // Fechar modal clicando fora
-        window.onclick = function(event) {
-            const roomModal = document.getElementById('roomModal');
-            const logoutModal = document.getElementById('logoutModal');
-            
-            if (event.target === roomModal) {
-                closeModal();
-            }
-            if (event.target === logoutModal) {
-                closeLogoutModal();
-            }
-        }
-        
-        // Inicializar
-        loadRoomStats();
-        setInterval(loadRoomStats, 10000); // Atualizar a cada 10 segundos
-        
-        // Simular mensagens do dia
-        document.getElementById('total-messages').textContent = Math.floor(Math.random() * 200) + 50;
-    </script>
+    <script src="{{ url_for('static', filename='scripts/rooms.js') }}"></script>
 </body>
 </html>

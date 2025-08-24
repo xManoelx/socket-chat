@@ -46,6 +46,20 @@
                         <div class="preview-title">Chat Geral</div>
                         <div class="preview-online">5 online</div>
                     </div>
+                    <div class="preview-messages">
+                        <div class="preview-message">
+                            <span class="msg-user">João:</span>
+                            <span class="msg-text">Olá pessoal! 👋</span>
+                        </div>
+                        <div class="preview-message">
+                            <span class="msg-user">Maria:</span>
+                            <span class="msg-text">Como vocês estão?</span>
+                        </div>
+                        <div class="preview-message">
+                            <span class="msg-user">Pedro:</span>
+                            <span class="msg-text">Tudo bem! Loving this chat! 💬</span>
+                        </div>
+                    </div>
                     <div class="preview-input">
                         <input type="text" placeholder="Digite sua mensagem..." disabled>
                         <button disabled>Enviar</button>
@@ -61,25 +75,25 @@
             
             <div class="features-grid">
                 <div class="feature-item">
-                    <div class="feature-icon">⚡</div>
+                    <div class="feature-icon">RT</div>
                     <h3>Tempo Real</h3>
                     <p>Mensagens instantâneas com tecnologia WebSocket</p>
                 </div>
                 
                 <div class="feature-item">
-                    <div class="feature-icon">🏠</div>
+                    <div class="feature-icon">SALAS</div>
                     <h3>Salas Temáticas</h3>
                     <p>Chat Geral, Programação e Games para todos os gostos</p>
                 </div>
                 
                 <div class="feature-item">
-                    <div class="feature-icon">💾</div>
+                    <div class="feature-icon">HIST</div>
                     <h3>Histórico Completo</h3>
                     <p>Suas conversas são salvas e sempre acessíveis</p>
                 </div>
                 
                 <div class="feature-item">
-                    <div class="feature-icon">📱</div>
+                    <div class="feature-icon">RESP</div>
                     <h3>Multiplataforma</h3>
                     <p>Funciona perfeitamente em qualquer dispositivo</p>
                 </div>
@@ -101,46 +115,6 @@
         </div>
     </div>
 
-    <script>
-        // Carregar número de usuários online
-        function loadOnlineUsers() {
-            fetch('/api/users')
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('online-users').textContent = data.count_total;
-                })
-                .catch(() => {
-                    document.getElementById('online-users').textContent = '0';
-                });
-        }
-        
-        loadOnlineUsers();
-        setInterval(loadOnlineUsers, 30000); // Atualizar a cada 30 segundos
-        
-        let currentMessage = 0;
-        
-        function rotateMessages() {
-            const messagesContainer = document.querySelector('.preview-messages');
-            messagesContainer.innerHTML = '';
-            
-            for (let i = 0; i < 3; i++) {
-                const msgIndex = (currentMessage + i) % messages.length;
-                const msg = messages[msgIndex];
-                
-                const msgDiv = document.createElement('div');
-                msgDiv.className = 'preview-message';
-                msgDiv.innerHTML = `
-                    <span class="msg-user">${msg.user}:</span>
-                    <span class="msg-text">${msg.text}</span>
-                `;
-                messagesContainer.appendChild(msgDiv);
-            }
-            
-            currentMessage = (currentMessage + 1) % messages.length;
-        }
-        
-        // Rotacionar mensagens a cada 3 segundos
-        setInterval(rotateMessages, 3000);
-    </script>
+    <script src="{{ url_for('static', filename='scripts/index.js') }}"></script>
 </body>
 </html>

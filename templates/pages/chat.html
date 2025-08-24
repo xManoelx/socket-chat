@@ -43,107 +43,12 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js"></script>
     <script>
-        const username = "{{ username }}";
-        const room = "{{ sala }}";
-        
-        // Conectar ao SocketIO
-        var socket = io.connect('http://' + document.domain + ':' + location.port);
-        
-        // Quando conectar, entrar na sala
-        socket.on('connect', function() {
-            socket.emit('join_room', {
-                'username': username,
-                'room': room
-            });
-        });
-        
-        // Quando sair da página, deixar a sala
-        window.addEventListener('beforeunload', function() {
-            socket.emit('leave_room', {
-                'username': username,
-                'room': room
-            });
-        });
-        
-        // Carregar contagem inicial de usuários na sala
-        fetch(`/api/users/${room}`)
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('room-users-count').textContent = data.count;
-            })
-            .catch(error => console.error('Erro ao carregar usuários da sala:', error));
-        
-        // Receber mensagens da sala
-        socket.on('message', function(data) {
-            if (data.room === room) {
-                const messagesDiv = document.getElementById('messages');
-                const messageDiv = document.createElement('div');
-                messageDiv.className = 'message';
-                
-                const time = new Date().toLocaleTimeString('pt-BR', {
-                    hour: '2-digit', 
-                    minute: '2-digit'
-                });
-                
-                messageDiv.innerHTML = `
-                    <div class="message-header">
-                        <span class="message-username">${data.username}</span>
-                        <span class="message-time">${time}</span>
-                    </div>
-                    <div class="message-text">${data.message}</div>
-                `;
-                
-                messagesDiv.appendChild(messageDiv);
-                messagesDiv.scrollTop = messagesDiv.scrollHeight;
-            }
-        });
-        
-        // Usuário entrou na sala
-        socket.on('user_joined', function(data) {
-            if (data.room === room) {
-                document.getElementById('room-users-count').textContent = data.users_in_room.length;
-                
-                // Só mostrar mensagem se não for o próprio usuário
-                if (data.username !== username) {
-                    const messagesDiv = document.getElementById('messages');
-                    const systemMessage = document.createElement('div');
-                    systemMessage.className = 'system-message';
-                    systemMessage.textContent = `${data.username} entrou na sala`;
-                    messagesDiv.appendChild(systemMessage);
-                    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-                }
-            }
-        });
-        
-        // Usuário saiu da sala
-        socket.on('user_left', function(data) {
-            if (data.room === room) {
-                document.getElementById('room-users-count').textContent = data.users_in_room.length;
-                
-                const messagesDiv = document.getElementById('messages');
-                const systemMessage = document.createElement('div');
-                systemMessage.className = 'system-message';
-                systemMessage.textContent = `${data.username} saiu da sala`;
-                messagesDiv.appendChild(systemMessage);
-                messagesDiv.scrollTop = messagesDiv.scrollHeight;
-            }
-        });
-        
-        // Enviar mensagem
-        document.getElementById('messageForm').onsubmit = function(e) {
-            e.preventDefault();
-            const messageInput = document.getElementById('messageInput');
-            const message = messageInput.value.trim();
-            
-            if (message) {
-                socket.emit('message', {
-                    'username': username,
-                    'message': message,
-                    'room': room
-                });
-                messageInput.value = '';
-            }
+        // Configuração para o script externo
+        window.chatConfig = {
+            username: "{{ username }}",
+            room: "{{ sala }}"
         };
     </script>
+    <script src="{{ url_for('static', filename='scripts/chat.js') }}"></script>
 </body>
 </html>
