@@ -1,33 +1,146 @@
-<html>
 <!DOCTYPE html>
-   <html lang="en">
-   <head>
-       <meta charset="UTF-8">
-       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-       <title>Chat em Tempo Real</title>
-   </head>
-   <body>
-       <ul id="messages"></ul>
-       <form id="form" action="">
-           <input id="input" autocomplete="off" /><button>Enviar</button>
-       </form>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatApp - Bem-vindo</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style-index.css') }}">
+</head>
+<body>
+    <div class="hero-section">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>ChatApp</h1>
+                <p class="hero-subtitle">Conecte-se, converse e compartilhe em tempo real</p>
+                <p class="hero-description">
+                    Plataforma moderna de chat com salas temáticas, mensagens persistentes 
+                    e interface responsiva. Junte-se à comunidade agora!
+                </p>
+                
+                <div class="cta-buttons">
+                    <a href="/login" class="btn btn-primary">Entrar no Chat</a>
+                    <a href="/about" class="btn btn-secondary">Saiba Mais</a>
+                </div>
+                
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <span class="stat-number" id="online-users">0</span>
+                        <span class="stat-label">Online agora</span>
+                    </div>
+                    <div class="stat-divider">•</div>
+                    <div class="stat-item">
+                        <span class="stat-number">3</span>
+                        <span class="stat-label">Salas ativas</span>
+                    </div>
+                    <div class="stat-divider">•</div>
+                    <div class="stat-item">
+                        <span class="stat-number">∞</span>
+                        <span class="stat-label">Diversão</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="hero-visual">
+                <div class="chat-preview">
+                    <div class="preview-header">
+                        <div class="preview-title">Chat Geral</div>
+                        <div class="preview-online">5 online</div>
+                    </div>
+                    <div class="preview-input">
+                        <input type="text" placeholder="Digite sua mensagem..." disabled>
+                        <button disabled>Enviar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-       <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js"></script>
-       <script>
-           var socket = io.connect('http://' + document.domain + ':' + location.port);
+    <div class="features-section">
+        <div class="container">
+            <h2>Por que escolher o ChatApp?</h2>
+            
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Tempo Real</h3>
+                    <p>Mensagens instantâneas com tecnologia WebSocket</p>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">🏠</div>
+                    <h3>Salas Temáticas</h3>
+                    <p>Chat Geral, Programação e Games para todos os gostos</p>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">💾</div>
+                    <h3>Histórico Completo</h3>
+                    <p>Suas conversas são salvas e sempre acessíveis</p>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">📱</div>
+                    <h3>Multiplataforma</h3>
+                    <p>Funciona perfeitamente em qualquer dispositivo</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-           socket.on('message', function(msg) {
-               var ul = document.getElementById('messages');
-               var li = document.createElement('li');
-               li.appendChild(document.createTextNode(msg));
-               ul.appendChild(li);
-           });
+    <div class="cta-section">
+        <div class="container">
+            <h2>Pronto para começar a conversar?</h2>
+            <p>Junte-se a centenas de usuários que já fazem parte da nossa comunidade</p>
+            <a href="/login" class="btn btn-large">Começar Agora - É Grátis!</a>
+        </div>
+    </div>
 
-           document.getElementById('form').onsubmit = function() {
-               socket.emit('message', document.getElementById('input').value);
-               document.getElementById('input').value = '';
-               return false;
-           };
-       </script>
-   </body>
+    <div class="footer">
+        <div class="container">
+            <p>&copy; 2025 ChatApp. Feito com ❤️ para conectar pessoas.</p>
+        </div>
+    </div>
+
+    <script>
+        // Carregar número de usuários online
+        function loadOnlineUsers() {
+            fetch('/api/users')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('online-users').textContent = data.count_total;
+                })
+                .catch(() => {
+                    document.getElementById('online-users').textContent = '0';
+                });
+        }
+        
+        loadOnlineUsers();
+        setInterval(loadOnlineUsers, 30000); // Atualizar a cada 30 segundos
+        
+        let currentMessage = 0;
+        
+        function rotateMessages() {
+            const messagesContainer = document.querySelector('.preview-messages');
+            messagesContainer.innerHTML = '';
+            
+            for (let i = 0; i < 3; i++) {
+                const msgIndex = (currentMessage + i) % messages.length;
+                const msg = messages[msgIndex];
+                
+                const msgDiv = document.createElement('div');
+                msgDiv.className = 'preview-message';
+                msgDiv.innerHTML = `
+                    <span class="msg-user">${msg.user}:</span>
+                    <span class="msg-text">${msg.text}</span>
+                `;
+                messagesContainer.appendChild(msgDiv);
+            }
+            
+            currentMessage = (currentMessage + 1) % messages.length;
+        }
+        
+        // Rotacionar mensagens a cada 3 segundos
+        setInterval(rotateMessages, 3000);
+    </script>
+</body>
 </html>

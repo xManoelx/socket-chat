@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salas - ChatApp</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style-rooms.css') }}">
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <h1>ChatApp - Salas</h1>
+        </div>
+        <div class="nav-links">
+            {% if current_user.is_authenticated %}
+                <a href="/homepage">← Voltar</a>
+                <a href="/about">Sobre</a>
+                <a href="#" onclick="confirmLogout()">Sair</a>
+            {% else %}
+                <a href="/login">Login</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="rooms-container">
+        <div class="rooms-content">
+            <div class="rooms-header">
+                <h2>Gerenciar Salas de Chat</h2>
+                <p class="subtitle">Explore todas as salas disponíveis e suas estatísticas</p>
+            </div>
+
+            <div class="rooms-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">SALAS</div>
+                    <div class="stat-info">
+                        <div class="stat-number">{{ rooms|length }}</div>
+                        <div class="stat-label">Salas Ativas</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">USERS</div>
+                    <div class="stat-info">
+                        <div class="stat-number" id="total-online">0</div>
+                        <div class="stat-label">Usuários Online</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">MSGS</div>
+                    <div class="stat-info">
+                        <div class="stat-number" id="total-messages">-</div>
+                        <div class="stat-label">Mensagens Hoje</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rooms-grid">
+                {% for room in rooms %}
+                <div class="room-card">
+                    <div class="room-header">
+                        <div class="room-icon">
+                            {% if room.name == 'geral' %}GERAL
+                            {% elif room.name == 'programacao' %}CODE
+                            {% elif room.name == 'games' %}GAME
+                            {% else %}CHAT{% endif %}
+                        </div>
+                        <div class="room-info">
+                            <h3>{{ room.display_name }}</h3>
+                            <p class="room-description">{{ room.description }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="room-stats">
+                        <div class="room-stat">
+                            <span class="stat-label">Online agora:</span>
+                            <span class="stat-value" id="users-{{ room.name }}">0</span>
+                        </div>
+                        <div class="room-stat">
+                            <span class="stat-label">Criada em:</span>
+                            <span class="stat-value">{{ room.created_at.strftime('%d/%m/%Y') }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="room-activity">
+                        <div class="activity-indicator">
+                            <div class="activity-dot" id="activity-{{ room.name }}"></div>
+                            <span class="activity-text" id="activity-text-{{ room.name }}">Verificando...</span>
+                        </div>
+                    </div>
+                    
+                    <div class="room-actions">
+                        {% if current_user.is_authenticated %}
+                            <a href="/chat/{{ room.name }}?user={{ current_user.username }}" class="btn btn-primary">
+                                Entrar na Sala
+                            </a>
+                        {% else %}
+                            <a href="/login" class="btn btn-secondary">
+                                Fazer Login
+                            </a>
+                        {% endif %}
+                        <button class="btn btn-info" onclick="showRoomDetails('{{ room.name }}', '{{ room.display_name }}')">
+                            Ver Detalhes
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="room-management">
+                <h3>Informações Adicionais</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <h4>Salas Privadas</h4>
+                        <p>Em breve você poderá criar suas próprias salas privadas protegidas por senha.</p>
+                    </div>
+                    <div class="info-item">
+                        <h4>Configurações</h4>
+                        <p>Personalize sua experiência com temas, notificações e muito mais.</p>
+                    </div>
+                    <div class="info-item">
+                        <h4>Estatísticas</h4>
+                        <p>Acompanhe suas estatísticas de uso e atividade no ChatApp.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Detalhes da Sala -->
+    <div id="roomModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Detalhes da Sala</h3>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="detail-item">
+                    <strong>Usuários Online:</strong>
+                    <span id="modalUsers">-</span>
+                </div>
+                <div class="detail-item">
+                    <strong>Última Atividade:</strong>
+                    <span id="modalActivity">-</span>
+                </div>
+                <div class="detail-item">
+                    <strong>Mensagens Recentes:</strong>
+                    <div id="modalMessages">Carregando...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Logout -->
+    <div id="logoutModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Confirmar Saída</h3>
+                <span class="close" onclick="closeLogoutModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Tem certeza que deseja sair do ChatApp?</p>
+                <div class="modal-actions">
+                    <button class="btn btn-danger" onclick="logout()">Sair</button>
+                    <button class="btn btn-secondary" onclick="closeLogoutModal()">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Carregar estatísticas em tempo real
+        function loadRoomStats() {
+            fetch('/api/users')
+                .then(response => response.json())
+                .then(data => {
+                    // Total de usuários online
+                    document.getElementById('total-online').textContent = data.count_total;
+                    
+                    // Usuários por sala
+                    Object.entries(data.count_by_room).forEach(([room, count]) => {
+                        const element = document.getElementById(`users-${room}`);
+                        if (element) {
+                            element.textContent = count;
+                        }
+                        
+                        // Atualizar indicador de atividade
+                        const activityDot = document.getElementById(`activity-${room}`);
+                        const activityText = document.getElementById(`activity-text-${room}`);
+                        
+                        if (activityDot && activityText) {
+                            if (count > 0) {
+                                activityDot.className = 'activity-dot active';
+                                activityText.textContent = 'Ativa';
+                            } else {
+                                activityDot.className = 'activity-dot inactive';
+                                activityText.textContent = 'Inativa';
+                            }
+                        }
+                    });
+                })
+                .catch(error => console.error('Erro ao carregar estatísticas:', error));
+        }
+        
+        // Mostrar detalhes da sala
+        function showRoomDetails(roomName, displayName) {
+            document.getElementById('modalTitle').textContent = `Detalhes - ${displayName}`;
+            document.getElementById('roomModal').style.display = 'block';
+            
+            // Carregar dados específicos da sala
+            fetch(`/api/users/${roomName}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('modalUsers').textContent = data.count;
+                    document.getElementById('modalActivity').textContent = new Date().toLocaleString('pt-BR');
+                    document.getElementById('modalMessages').innerHTML = 
+                        data.count > 0 ? 'Sala ativa com conversas em andamento' : 'Nenhuma atividade recente';
+                });
+        }
+        
+        // Fechar modal
+        function closeModal() {
+            document.getElementById('roomModal').style.display = 'none';
+        }
+        
+        // Confirmar logout
+        function confirmLogout() {
+            document.getElementById('logoutModal').style.display = 'block';
+        }
+        
+        function closeLogoutModal() {
+            document.getElementById('logoutModal').style.display = 'none';
+        }
+        
+        function logout() {
+            window.location.href = '/logout';
+        }
+        
+        // Fechar modal clicando fora
+        window.onclick = function(event) {
+            const roomModal = document.getElementById('roomModal');
+            const logoutModal = document.getElementById('logoutModal');
+            
+            if (event.target === roomModal) {
+                closeModal();
+            }
+            if (event.target === logoutModal) {
+                closeLogoutModal();
+            }
+        }
+        
+        // Inicializar
+        loadRoomStats();
+        setInterval(loadRoomStats, 10000); // Atualizar a cada 10 segundos
+        
+        // Simular mensagens do dia
+        document.getElementById('total-messages').textContent = Math.floor(Math.random() * 200) + 50;
+    </script>
+</body>
+</html>
