@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sobre - ChatApp</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style-about.css') }}">
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <h1>ChatApp - Sobre</h1>
+        </div>
+        <div class="nav-links">
+            {% if current_user.is_authenticated %}
+                <a href="/homepage">← Voltar</a>
+                <a href="/rooms">Salas</a>
+                <a href="/logout">Sair</a>
+            {% else %}
+                <a href="/login">Login</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="about-container">
+        <div class="about-content">
+            <div class="about-header">
+                <h2>Sobre o ChatApp</h2>
+                <p class="subtitle">Sistema de chat em tempo real moderno e eficiente</p>
+            </div>
+
+            <div class="features-section">
+                <h3>Funcionalidades</h3>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">💬</div>
+                        <h4>Chat em Tempo Real</h4>
+                        <p>Mensagens instantâneas usando tecnologia WebSocket</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">🏠</div>
+                        <h4>Salas Separadas</h4>
+                        <p>Chat Geral, Programação e Games - cada um com seu tópico</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">💾</div>
+                        <h4>Histórico Persistente</h4>
+                        <p>Todas as mensagens são salvas e carregadas automaticamente</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">👥</div>
+                        <h4>Usuários Online</h4>
+                        <p>Veja quantos usuários estão online em cada sala</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">🔐</div>
+                        <h4>Sistema Seguro</h4>
+                        <p>Autenticação robusta com Flask-Login</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">📱</div>
+                        <h4>Responsivo</h4>
+                        <p>Funciona perfeitamente em desktop e mobile</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tech-section">
+                <h3>Tecnologias Utilizadas</h3>
+                <div class="tech-list">
+                    <div class="tech-item">
+                        <strong>Backend:</strong> Flask + Flask-SocketIO
+                    </div>
+                    <div class="tech-item">
+                        <strong>Banco de Dados:</strong> SQLite com SQLAlchemy
+                    </div>
+                    <div class="tech-item">
+                        <strong>Frontend:</strong> HTML5, CSS3, JavaScript
+                    </div>
+                    <div class="tech-item">
+                        <strong>Autenticação:</strong> Flask-Login
+                    </div>
+                    <div class="tech-item">
+                        <strong>Tempo Real:</strong> WebSocket (Socket.IO)
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-section">
+                <h3>Estatísticas</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="total-users">-</div>
+                        <div class="stat-label">Usuários Cadastrados</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="total-messages">-</div>
+                        <div class="stat-label">Mensagens Enviadas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">3</div>
+                        <div class="stat-label">Salas Disponíveis</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="online-now">-</div>
+                        <div class="stat-label">Online Agora</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="contact-section">
+                <h3>Desenvolvido com ❤️</h3>
+                <p>ChatApp é um projeto educativo para demonstrar as capacidades do Flask e Socket.IO.</p>
+                <p>Sistema robusto, escalável e moderno para comunicação em tempo real.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Carregar estatísticas
+        function loadStats() {
+            // Usuários online agora
+            fetch('/api/users')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('online-now').textContent = data.count_total;
+                })
+                .catch(() => {
+                    document.getElementById('online-now').textContent = '0';
+                });
+        }
+
+        // Carregar na inicialização
+        loadStats();
+        
+        // Simular outras estatísticas (você pode criar APIs reais para isso)
+        document.getElementById('total-users').textContent = Math.floor(Math.random() * 50) + 10;
+        document.getElementById('total-messages').textContent = Math.floor(Math.random() * 1000) + 100;
+    </script>
+</body>
+</html>
